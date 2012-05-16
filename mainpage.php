@@ -63,7 +63,7 @@
 
        var url = br.djatoka_prefix + br.fedora_prefix + '/objects/' + leafStr + '/datastreams/' + islandora_params.image_type + '/content&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/png&svc.level=' + br.compression + '&svc.rotate=0';
         if(islandora_params.image_type == "JPEG"){
-          url = islandora_params.ISLANDORA_PREFIX + PID + 'JPEG';
+          url = islandora_params.ISLANDORA_PREFIX + PID + '/JPEG';
         }
         return url;
       }
