@@ -45,6 +45,7 @@
       br.getPageWidth = function(index) {
         return br.width;
       }
+      
 
       // Return the height of a given page.
       br.getPageHeight = function(index) {
@@ -57,10 +58,9 @@
         // reduce and rotate are ignored in this simple implementation, but we
         // could e.g. look at reduce and load images from a different directory
         // or pass the information to an image server
-        var leafStr = br.structMap[index+1];//get the pid of the object from the struct map islandora specific
+        var leafStr = br.structMap[index];//get the pid of the object from the struct map islandora specific
        // var url = br.djatoka_prefix + br.islandora_prefix + leafStr + '/JP2/&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/png&svc.level=' + br.compression + '&svc.rotate=0';
-       var url = br.djatoka_prefix + br.fedora_prefix + '/objects/' + leafStr + '/datastreams/JP2/content&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/png&svc.level=' + br.compression + '&svc.rotate=0';
-        
+        var url = br.djatoka_prefix + br.fedora_prefix + '/objects/' + leafStr + '/datastreams/' + islandora_params.image_type + '/content&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/png&svc.level=' + br.compression + '&svc.rotate=0';
         return url;
       }
       
