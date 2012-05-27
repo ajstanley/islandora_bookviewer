@@ -70,8 +70,8 @@
       
       br.getOcrURI = function (index){
         var indices = br.getSpreadIndices(index);
-        var pidL = br.structMap[indices[0]+1]; // pid for left page
-        var pidR = br.structMap[indices[1]+1]; // pid for right page
+        var pidL = br.structMap[indices[0]]; // pid for left page
+        var pidR = br.structMap[indices[1]]; // pid for right page
         if (typeof pidL == 'undefined') { pidL = '-'; }
         if (typeof pidR == 'undefined') { pidR = '-'; }
         return br.baseUrl+"/bookreader/ocr/" + pidL + '/' + pidR ;
