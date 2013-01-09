@@ -312,16 +312,39 @@ function islandora_bookviewer_setup($pid) {
   $book_pids = get_sorted_pages($pid);
   $page_item = new Fedora_Item($book_pids[0]);
   $image_type = 'JPEG';
-  if (array_key_exists('JP2', $page_item->datastreams)) {
-    $image_type = 'JP2';
-  }
   $label = $item->objectProfile->objLabel;
-  $djatoka_prefix = variable_get('islandora_djatoka_path', 'http://localhost:8080/adore-djatoka') . '/resolver?url_ver=Z39.88-2004&rft_id=';
   $islandora_prefix = $base_url . '/fedora/repository/';
   $fedora_prefix = variable_get('fedora_base_url', 'http:8080/fedora');
 
-  $filename = $djatoka_prefix . "$fedora_prefix/objects/" . $book_pids[count($book_pids) - 1] . "/datastreams/$image_type/content&svc_id=info:lanl-repo/svc/getMetadata";
-  $pageData = json_decode(file_get_contents($filename));
+  if (count($book_pids) > 1) {
+    $book_pid = $book_pids[count($book_pids) - 1];
+  }
+  else {
+    $book_pid = $book_pids[0];
+  }
+  $page_item = new Fedora_Item($book_pid);
+
+  if (array_key_exists('TECHMD', $page_item->datastreams)) {
+    $content = $page_item->get_datastream_dissemination('TECHMD');
+    $sxml = simplexml_load_string($content);
+    $sxml->registerXPathNamespace('fits', "http://hul.harvard.edu/ois/xml/ns/fits/fits_output");
+    $image_height = $sxml->xpath('//fits:imageHeight');
+    $image_height = (string) $image_height[0];
+    $image_width = $sxml->xpath('//fits:imageWidth');
+    $image_width = (string) $image_width[0];
+  }
+  else {
+    global $base_url;
+    $filename = $base_url . "/fedora/repository/$book_pid/JPEG";
+    $flat_pid = str_replace(':', '_', $book_pid);
+    $storage_file = file_directory_path() . "/$flat_pid.jpg";
+    $image = file_get_contents($filename);
+    file_put_contents($storage_file, $image);
+    $dimensions = getimagesize($storage_file);
+    unlink($storage_file);
+    $image_height = $dimensions[1];
+    $image_width = $dimensions[0];
+  }
 
   $configs = array();
   $configs['DJATOKA_PREFIX'] = $djatoka_prefix;
@@ -329,8 +352,8 @@ function islandora_bookviewer_setup($pid) {
   $configs['FEDORA_PREFIX'] = $fedora_prefix;
   $configs['COMPRESSION'] = 4;
   $configs['book_pids'] = $book_pids;
-  $configs['page_width'] = $pageData->width;
-  $configs['page_height'] = $pageData->height;
+  $configs['page_width'] = $image_width;
+  $configs['page_height'] = $image_height;
   $configs['page_count'] = count($book_pids);
   $configs['page_progression'] = 'ltr';
   $configs['label'] = $label;
